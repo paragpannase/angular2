@@ -1,28 +1,118 @@
 # Ng2translate
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+## Step 1 create project
 
-## Development server
+Create angular project using angular cli using command ng new ng2translate.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Step 2 jump to root
 
-## Code scaffolding
+Go to root directory of your project.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+## step 3 run your application
 
-## Build
+Check once Application work fine Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+The app will automatically reload if you change any of the source files.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+## step 4 installation ng2transalte
 
-## Running unit tests
+ install ng2transalte using npm install ng2-translate --save
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+ ## step 4  Import the TranslateModule
 
-## Running end-to-end tests
+ The angular 2 transalte looking language file bydefault 
+ in root directory u can overwrite location using 2 example.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
 
-## Further help
+mport {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {HttpModule} from '@angular/http';
+import {TranslateModule} from 'ng2-translate';
+ 
+@NgModule({
+    imports: [
+        BrowserModule,
+        HttpModule,
+        TranslateModule.forRoot()
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+# or
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpModule,Http} from '@angular/http';
+import { AppComponent } from './app.component';
+import {TranslateModule,TranslateLoader,TranslateStaticLoader} from "ng2-translate";
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    HttpModule,
+    TranslateModule.forRoot({
+            provide: TranslateLoader,
+            useFactory: (http: Http) => new TranslateStaticLoader(http, '/assets/i18n', '.json'),
+            deps: [Http]
+        })
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+## step 5 Add lanuage file
+
+###ex en.json
+
+{
+  "HOME": {
+    "TITLE": "Welcome!",
+    "SELECT": "Change language"
+  }
+}
+
+
+## step 6 coding
+
+import {Component} from '@angular/core';
+import {TranslateService} from 'ng2-translate';
+
+@Component({
+    selector: 'app-root',
+    template: `
+    <div>
+      <h2>{{ 'HOME.TITLE' | translate }}</h2>
+      <label>
+        {{ 'HOME.SELECT' | translate }}
+        <select #langSelect (change)="translate.use(langSelect.value)">
+          <option *ngFor="let lang of translate.getLangs()" [value]="lang" [selected]="lang === translate.currentLang">{{ lang }}</option>
+        </select>
+      </label>
+    </div>
+  `,
+})
+export class AppComponent {
+    constructor(private translate: TranslateService) {
+        translate.addLangs(["en", "hi"]);  //adding languages in array
+        translate.setDefaultLang('en');    // set default language
+
+        let browserLang = translate.getBrowserLang();  //find the browser language
+        translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');  //check conditions for available options
+    }
+}
+  
+## step 7
+
+run application using ng serve
+
+
+## Reference 
+
+https://www.npmjs.com/package/ng2-translate
